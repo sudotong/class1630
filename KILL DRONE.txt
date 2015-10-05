@@ -1,0 +1,5 @@
+KILL DRONE
+
+telnet 192.168.1.1
+
+killall -s SIGKILL dragon-prog; gpio 39 -d ho 1;test-SIP6_pwm -S;

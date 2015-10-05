@@ -136,8 +136,8 @@ static P_DroneRS_Compensator_T DroneRS_Compensator_P = {
     1.5e-5,
     0.068,
 
-    { 8.0299999999999987e-5, 1.1699999999999996e-5, 0.0, 1.1699999999999995e-5,
-      8.03e-5, 0.0, 0.0, 0.0, 0.0001366 },
+    { 8.0299999999999987e-5, 1.17e-5, 0.0, 1.1699999999999993e-5, 8.03e-5, 0.0,
+      0.0, 0.0, 0.0001366 },
     -0.015875999999999998,
     0.0624,
     2.0,
@@ -170,14 +170,14 @@ static P_DroneRS_Compensator_T DroneRS_Compensator_P = {
                                         */
 
   {
-    { 0.28212412246252067, 1.272539291716861, 2.4208439774454473,
-      2.4208439774454487, 1.272539291716863, 0.28212412246252133 },
+    { 0.28212412246252078, 1.2725392917168599, 2.4208439774454433,
+      2.4208439774454429, 1.272539291716859, 0.28212412246252039 },
 
     { 1.0, 2.2287149173647665, 2.5244618916938606, 1.5772531712757014,
-      0.541022406829817, 0.079562396085500781 },
+      0.54102240682981717, 0.079562396085500836 },
 
-    { 0.007509257528603033, -0.022498139897706472, 0.014988905760749172,
-      0.014988905760749172, -0.022498139897706455, 0.0075092575286030234 },
+    { 0.0075092575286030347, -0.022498139897706496, 0.014988905760749223,
+      0.014988905760749157, -0.022498139897706482, 0.0075092575286030382 },
 
     { 1.0, -4.89810443312637, 9.5974881329446688, -9.4036722433820046,
       4.60730099744654, -0.90301240709954322 },
@@ -265,7 +265,7 @@ static P_DroneRS_Compensator_T DroneRS_Compensator_P = {
     /*  Expression: pInitialization.M
      * Referenced by: '<S131>/KalmanGainM'
      */
-    { 0.005756860081440762, 0.0, 0.0, 0.005756860081440762 },
+    { 0.0057568600814408791, 0.0, 0.0, 0.0057568600814408791 },
     0.0,                               /* Expression: 0
                                         * Referenced by: '<S69>/IIRgyroz'
                                         */
@@ -291,7 +291,7 @@ static P_DroneRS_Compensator_T DroneRS_Compensator_P = {
     /*  Expression: pInitialization.M
      * Referenced by: '<S16>/KalmanGainM'
      */
-    { 0.026241420641871072, 0.069776736071495274 },
+    { 0.026241420641871412, 0.0697767360714959 },
 
     /*  Expression: [0 0 quad.g]
      * Referenced by: '<S7>/gravity'
@@ -317,7 +317,7 @@ static P_DroneRS_Compensator_T DroneRS_Compensator_P = {
     /*  Expression: pInitialization.M
      * Referenced by: '<S71>/KalmanGainM'
      */
-    { 0.1254656089860898, 0.0, 0.0, 0.1254656089860898 },
+    { 0.12546560898608936, 0.0, 0.0, 0.12546560898608936 },
 
     /*  Expression: [0 0 -quad.g]
      * Referenced by: '<S67>/gravity'
@@ -388,7 +388,7 @@ static P_DroneRS_Compensator_T DroneRS_Compensator_P = {
     /*  Expression: pInitialization.L
      * Referenced by: '<S16>/KalmanGainL'
      */
-    { 0.026590304322228548, 0.069776736071495274 },
+    { 0.026590304322228892, 0.0697767360714959 },
 
     /*  Expression: pInitialization.A
      * Referenced by: '<S68>/A'
@@ -403,7 +403,7 @@ static P_DroneRS_Compensator_T DroneRS_Compensator_P = {
     /*  Expression: pInitialization.L
      * Referenced by: '<S71>/KalmanGainL'
      */
-    { 0.1254656089860898, 0.0, 0.0, 0.1254656089860898 },
+    { 0.12546560898608936, 0.0, 0.0, 0.12546560898608936 },
 
     /*  Expression: pInitialization.A
      * Referenced by: '<S128>/A'
@@ -418,7 +418,7 @@ static P_DroneRS_Compensator_T DroneRS_Compensator_P = {
     /*  Expression: pInitialization.L
      * Referenced by: '<S131>/KalmanGainL'
      */
-    { 0.005756860081440762, 0.0, 0.0, 0.005756860081440762 },
+    { 0.0057568600814408791, 0.0, 0.0, 0.0057568600814408791 },
     1U,                                /* Computed Parameter: Delay_DelayLength
                                         * Referenced by: '<S66>/Delay'
                                         */
