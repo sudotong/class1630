@@ -84,11 +84,23 @@ o_ddot_jacobian_eql = subs(o_ddot_jacobian,symsvector,equil);
 matrixAB = [P_dot_jacobian_eql;O_dot_jacobian_eql;p_ddot_jacobian_eql;o_ddot_jacobian_eql];
 A = double(matrixAB(1:12,1:12))
 B = double(matrixAB(1:12,13:16))
-%Note x_nonlinearSys = x_eq + x_linearizedSys! Thus, x0_linearizedSys = x0_nonlinear - x_eq; 
-%Note u_nonlinearSys = u_eq + x_linearizedSys!
+%Note that with linearization, the resulting LTI system with states
+%x_linSys and u_linSys runs around equilibrium conditions and NOT in the orginal state x_nonlinearSys and input space.
+%It is x_nonlinearSys = x_eq + x_linearizedSys. Thus, x0_linearizedSys = x0_nonlinear - x_eq; 
+%For the input, it is u_nonlinearSys = u_eq + x_linearizedSys.
+
+%Eigenvalues are all zeros as it is a multiple double integrator (mechanical system with no constaints (drone flies freely in all 6 DOFs)
 
 %% 1.2) Linearizing Full Nonlinear Simulink Model (the model from Robotics Toolbox)
 %use Simulation/controllers/controller_fullstate/linearizeDrone.slx and Simulink's ControlDesign/Linear Analysis
+load('LinearizedComplexDrone.mat');
+A_fullnlDrone = linsys1.c*linsys1.a*inv(linsys1.c);
+B_fullnlDrone = linsys1.c*linsys1.b;
+
+%Eigenvalues are: 5 zeros (integrators), 3 stable modes, 2 unstable oscillatory modes
+%Note that if we run the drone without motion in x,y,yaw-direction, the
+%simple and the complex model behave the same way (differences in matrices
+%relate to x-y-yaw-motion only)
 
 %% 2.0) Load Full-state Feedback Controller derived from the PIDtoW-controller
 %(see linearizePID2W.m)
@@ -109,44 +121,48 @@ A_dec   = inv(Veig_nrm)*A*Veig_nrm;
 B_dec   = inv(Veig_nrm)*B;
 
 % Define decoupled subsystems
-A_dec_x   = ...
-B_dec_x   = ...
+A_dec_x   = A_dec(1:4,1:4);
+B_dec_x   = B_dec(1:4,1:4);
 
-A_dec_z   = ...
-B_dec_z   = ...
+A_dec_y   = A_dec(7:10,7:10);
+B_dec_y   = B_dec(7:10,1:4);
 
-A_dec_y   = ...
-B_dec_y   = ...
+A_dec_z = A_dec(5:6,5:6);
+B_dec_z = B_dec(5:6,1:4);
 
-A_dec_yaw   = ...
-B_dec_yaw   = ...
+A_dec_yaw = A_dec(11:12,11:12);
+B_dec_yaw = B_dec(11:12,1:4);
 
 % Now place your own poles for the decoupled subsystems separately
-K_dec_x = ...
-K_dec_z = ...
-K_dec_y = ...    
-K_dec_yaw = ...
 
-% Compute Full-state feedback for 'original' system
+xpoles      = [-9+6i;-9-6i;-0.18+1.8i;-0.18-1.8i];
+ypoles      = [-60;-4;-0.1+2i;-0.1-2i];     
+yawpoles    = [-3;-3.1];
+zpoles    = [-2;-2.1];               % Play around with poles here: Slow poles [-2;-2.1], Fast poles [-5;-5.1];
+%zpoles    = [-5;-5.1];               % Play around with poles here: Slow poles [-2;-2.1], Fast poles [-5;-5.1];
+
+K_dec_x     = place(A_dec_x,B_dec_x,xpoles);
+K_dec_y     = place(A_dec_y,B_dec_y,ypoles);
+K_dec_z     = place(A_dec_z,B_dec_z,zpoles);
+K_dec_yaw   = place(A_dec_yaw,B_dec_yaw,yawpoles);
+
+% Compute Full-state feedback for original system
 K_poleplace = [K_dec_x K_dec_z K_dec_y K_dec_yaw]*inv(Veig_nrm);
 K_poleplace(abs(K_poleplace)<1e-10)=0;
 
+%The difference between the two controllers is only in z-dynamics. We
+%expect the controller with z-poles {-5;-5.1} to be stronger/faster than
+%the one with z-poles {-3;-3.1}. As the z-subsystem acts on states Z and
+%zdot, the only difference that we see in the K matrices are the elements
+%relating to the states Z and zdot.
+
+%Print K matrix
+K_poleplace
+
 % Generate c-code ready format for copy-paste straight into src-files rsedu_control.c
-% K_poleplace_string = sprintf('%E,' , K_poleplace(:));
-% K_poleplace_string = ['{ ' K_poleplace_string(1:end-1) ' }']
+K_poleplace_string = sprintf('%E,' , K_poleplace(:));
+K_poleplace_string = ['{ ' K_poleplace_string(1:end-1) ' }']
 
-
-
-%% 2.2) Designing Full-state Feedback Controllers with Simplified Dynamics Model (1.1) via LQR
-
-%CODE MISSING
-
-K_lqr(abs(K_lqr)<(1e-10))=0;  %set small values zero
-K_lqr(2,:) = K_poleplace(2,:); %LQR does not work well on yaw as LQR places much weight on yaw-rate (which is quite noisy)
-
-% Generate c-code ready format for copy-paste to src-files.
-K_lqr_ccode_string = sprintf('%E,' , K_lqr(:));
-K_lqr_ccode_string = ['{ ' K_lqr_ccode_string(1:end-1) ' }']
-
-
-
+% Check where poles land
+% [V,E,]=eig(A_dec_x-B_dec_x*K_dec_x);
+% [V,E,]=eig(A_dec_y-B_dec_y*K_dec_y);
