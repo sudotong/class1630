@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'DroneRS_Compensator'.
  *
- * Model version                  : 1.2611
+ * Model version                  : 1.2620
  * Simulink Coder version         : 8.8 (R2015a) 09-Feb-2015
- * C/C++ source code generated on : Wed Oct 14 16:32:57 2015
+ * C/C++ source code generated on : Wed Oct 28 10:16:10 2015
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -436,7 +436,7 @@ struct P_DroneRS_Compensator_T_ {
                                            *   '<S184>/Constant'
                                            */
   real_T K_poleplace[48];              /* Variable: K_poleplace
-                                        * Referenced by: '<S4>/FSFBMatrix_pp'
+                                        * Referenced by: '<S4>/Gain'
                                         */
   real_T sampleTime_qcsim;             /* Variable: sampleTime_qcsim
                                         * Referenced by: '<S3>/sampleTime'

@@ -1,10 +1,6 @@
-{
-global:
-DroneRS_Compensator_initialize;
-DroneRS_Compensator_step;
+EXPORTS
+DroneRS_Compensator_initialize
+DroneRS_Compensator_step
 
-  rt_StopDataLogging;
+  rt_StopDataLogging
 
-local:
-		*;
-};
