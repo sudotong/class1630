@@ -138,8 +138,8 @@ B_dec_yaw = B_dec(11:12,1:4);
 xpoles      = [-9+6i;-9-6i;-0.18+1.8i;-0.18-1.8i];
 ypoles      = [-60;-4;-0.1+2i;-0.1-2i];     
 yawpoles    = [-3;-3.1];
-zpoles    = [-2;-2.1];               % Play around with poles here: Slow poles [-2;-2.1], Fast poles [-5;-5.1];
-%zpoles    = [-5;-5.1];               % Play around with poles here: Slow poles [-2;-2.1], Fast poles [-5;-5.1];
+%zpoles    = [-2;-2.1];               % Play around with poles here: Slow poles [-2;-2.1], Fast poles [-5;-5.1];
+zpoles    = [-5;-5.1];               % Play around with poles here: Slow poles [-2;-2.1], Fast poles [-5;-5.1];
 
 K_dec_x     = place(A_dec_x,B_dec_x,xpoles);
 K_dec_y     = place(A_dec_y,B_dec_y,ypoles);
