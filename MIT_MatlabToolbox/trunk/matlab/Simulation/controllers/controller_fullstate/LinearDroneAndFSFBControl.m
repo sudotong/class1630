@@ -53,8 +53,8 @@ iW = ...
 
 %%Linearization Point = Hover
 %-----------
-state_equil = [0; 0; -1.5; 0 ;0 ;0 ;0 ;0 ;0 ;0 ;0 ;0 ];
-input_equil = [-quad.g*quad.M ;0 ;0 ;0];
+state_equil = [0; 0; -1.5; 0 ;0 ;0 ;0 ;0 ;0 ;0 ;0 ;0 ]; %x_eq
+input_equil = [-quad.g*quad.M ;0 ;0 ;0];		%u_eq
 equil       = [state_equil; input_equil];
 
 %%Dynamics
@@ -70,7 +70,7 @@ O_dot_jacobian  = jacobian(O_dot,symsvector);
 O_dot_jacobian_eql = subs(O_dot_jacobian,symsvector,equil);
 
 %p ddot      
-p_ddot          = Global2Body*[0;0;quad.g] + T/quad.M*[0;0;1];
+p_ddot          = Global2Body*[0;0;quad.g] + T/quad.M*[0;0;1] -cross(transpose([p,q,r]),transpose([dpx,dpy,dpz]));
 p_ddot_jacobian = jacobian(p_ddot,symsvector);
 p_ddot_jacobian_eql = subs(p_ddot_jacobian,symsvector,equil);
 %o ddot      
@@ -84,8 +84,8 @@ o_ddot_jacobian_eql = subs(o_ddot_jacobian,symsvector,equil);
 matrixAB = [P_dot_jacobian_eql;O_dot_jacobian_eql;p_ddot_jacobian_eql;o_ddot_jacobian_eql];
 A = double(matrixAB(1:12,1:12))
 B = double(matrixAB(1:12,13:16))
-x_0 = state_equil
-u_0 = input_equil
+%Note x_nonlinearSys = x_eq + x_linearizedSys! Thus, x0_linearizedSys = x0_nonlinear - x_eq; 
+%Note u_nonlinearSys = u_eq + x_linearizedSys!
 
 %% 1.2) Linearizing Full Nonlinear Simulink Model (the model from Robotics Toolbox)
 %use Simulation/controllers/controller_fullstate/linearizeDrone.slx and Simulink's ControlDesign/Linear Analysis
@@ -102,36 +102,34 @@ K_pid_ccode_string = ['{ ' K_pid_ccode_string(1:end-1) ' }']
 
 % Find states to decouple
 [V,J]   = jordan(A);
-Veig_nrm = diag(1./sum(V,1))*V;
+Veig_nrm = diag(1./sum(V,1))*V; % decoupled system will have a new state-vector x_dec = inv(Veig_nrm)*x
+
 % System matrices of decoupled system
 A_dec   = inv(Veig_nrm)*A*Veig_nrm;
 B_dec   = inv(Veig_nrm)*B;
 
 % Define decoupled subsystems
-A_dec_x = double(A_dec(1:4,1:4));
-A_dec_z = double(A_dec(5:6,5:6));
-A_dec_y = double(A_dec(7:10,7:10));
-A_dec_yaw = double(A_dec(11:12,11:12));
+A_dec_x   = ...
+B_dec_x   = ...
 
-B_dec_x = double(B_dec(1:4,1:4));
-B_dec_z = double(B_dec(5:6,1:4));
-B_dec_y = double(B_dec(7:10,1:4));
-B_dec_yaw = double(B_dec(11:12,1:4));
+A_dec_z   = ...
+B_dec_z   = ...
+
+A_dec_y   = ...
+B_dec_y   = ...
+
+A_dec_yaw   = ...
+B_dec_yaw   = ...
 
 % Now place your own poles for the decoupled subsystems separately
-K_dec_x = place(A_dec_x,B_dec_x,[-9+6i;-9-6i;-.18+1.8i;-.18-1.8i]);
-K1_dec_alt = place(A_dec_z,B_dec_z,[-2;-2.1]); % controller 1
-K2_dec_alt = place(A_dec_z,B_dec_z,[-5;-5.1]); % controller 2
-K_dec_y = place(A_dec_y,B_dec_y,[-60;-4;-.1+2i;-.1-2i]);
-K_dec_yaw = place(A_dec_yaw,B_dec_yaw,[-3,-3.1]);
+K_dec_x = ...
+K_dec_z = ...
+K_dec_y = ...    
+K_dec_yaw = ...
 
 % Compute Full-state feedback for 'original' system
-K_poleplace_1 = [K_dec_x K1_dec_alt K_dec_y K_dec_yaw]*inv(Veig_nrm);
-K_poleplace_1(abs(K_poleplace_1)<1e-10)=0;
-
-K_poleplace_2 = [K_dec_x K2_dec_alt K_dec_y K_dec_yaw]*inv(Veig_nrm);
-K_poleplace_2(abs(K_poleplace_2)<1e-10)=0;
-
+K_poleplace = [K_dec_x K_dec_z K_dec_y K_dec_yaw]*inv(Veig_nrm);
+K_poleplace(abs(K_poleplace)<1e-10)=0;
 
 % Generate c-code ready format for copy-paste straight into src-files rsedu_control.c
 % K_poleplace_string = sprintf('%E,' , K_poleplace(:));
@@ -149,37 +147,6 @@ K_lqr(2,:) = K_poleplace(2,:); %LQR does not work well on yaw as LQR places much
 % Generate c-code ready format for copy-paste to src-files.
 K_lqr_ccode_string = sprintf('%E,' , K_lqr(:));
 K_lqr_ccode_string = ['{ ' K_lqr_ccode_string(1:end-1) ' }']
- 
-%% question 4)
-load('linsys1.mat')
-A4 = linsys1.c*linsys1.a*inv(linsys1.c);
-B4 = linsys1.c*linsys1.b;
-C4 = linsys1.c*inv(linsys1.c);
-D4 = 0;
 
-%% produce graphs
-close all
 
-gx = simout.data(:,1);
-gy = simout.data(:,2);
-gz = simout.data(:,3);
-gyaw = simout.data(:,4);
-gpitch = simout.data(:,5);
-groll = simout.data(:,6);
-gt = simout.time;
-figure
-plot(gt, gx, 'b')
-hold on
-plot(gt, gy, 'r')
-plot(gt, gz, 'g')
-legend('x','y','z')
-title('Positions')
-
-figure
-plot(gt, gyaw, 'b')
-hold on
-plot(gt, gpitch, 'r')
-plot(gt, groll, 'g')
-legend('yaw','pitch','roll')
-title('Orientations')
 
