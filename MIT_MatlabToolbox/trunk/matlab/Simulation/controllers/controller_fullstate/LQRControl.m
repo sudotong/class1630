@@ -33,12 +33,12 @@ motor_max = 500;          % 1200
 %Cost weights on states
 pos_x_wght = 0.25/3;       % 0.15/3
 pos_y_wght = 0.25/3;       % 0.15/3
-pos_z_wght = 0.25/3;       % 0.95/3
+pos_z_wght = 0.25/3*50;    %0.25/3;       % 0.95/3
 att_wght   = 0.175/3;      % 0.075/3
 dpos_wght  = 0.175/3;      % 0.075/3
 datt_wght  = 0.4  /3;      % 0.3/3
 
-rho = 0.05;
+rho = 0.01; % 0.05;
 
 
 %Pack weights and limits
