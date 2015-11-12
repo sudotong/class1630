@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'DroneRS_Compensator'.
  *
- * Model version                  : 1.2611
+ * Model version                  : 1.2633
  * Simulink Coder version         : 8.8 (R2015a) 09-Feb-2015
- * C/C++ source code generated on : Wed Oct 14 16:32:57 2015
+ * C/C++ source code generated on : Thu Nov 12 10:33:53 2015
  *
  * Target selection: ert_shrlib.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -134,8 +134,8 @@ typedef struct {
 
 #endif
 
-/* Parameters for system: '<S1>/ControllerFSFB' */
-typedef struct P_ControllerFSFB_DroneRS_Comp_T_ P_ControllerFSFB_DroneRS_Comp_T;
+/* Parameters for system: '<S1>/ControllerLQR1' */
+typedef struct P_ControllerLQR1_DroneRS_Comp_T_ P_ControllerLQR1_DroneRS_Comp_T;
 
 /* Parameters for system: '<Root>/DroneRS_Compensator' */
 typedef struct P_DroneRS_Compensator_DroneRS_T_ P_DroneRS_Compensator_DroneRS_T;
